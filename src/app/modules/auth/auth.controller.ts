@@ -53,8 +53,40 @@ const veficationUser = catchAsync(async(req: Request, res: Response, next: NextF
 	});
 });
 
+// Login user functionality
+const loginUser = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const payload = req.body;
+
+    const { accessToken, refreshToken } = await authService.loginUserFromDB(payload);
+
+    res.cookie("aToken", accessToken, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "none",
+        maxAge: 1000 * 60 * 60 * 24  // 1 day
+    });
+
+    res.cookie("rToken", refreshToken, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "none",
+        maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+    });
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.CREATED,
+      message: "User loggedIn successfully",
+      data: {
+        accessToken, 
+        refreshToken
+      },
+    })
+});
+
 
 export const auhtController = {
     createUser,
-    veficationUser
+    veficationUser,
+    loginUser
 }

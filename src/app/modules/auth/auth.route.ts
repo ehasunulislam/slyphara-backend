@@ -16,7 +16,10 @@ router.post("/register",
 router.post("/verified-user", auhtController.veficationUser);
 
 // Login user 
-// router.post("/login", auhtController.loginUser);
+router.post("/login", 
+    validatedSchema(userValidation.loginUserZodSchema), 
+    auhtController.loginUser
+);
 
 // m-21 agai giving a new accesstoken route
 // router.post("/refresh-token", auhtController.refreshToken);

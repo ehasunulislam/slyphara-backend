@@ -33,7 +33,21 @@ const registerUserZodSchema = z.object({
 	role: z.enum(["Student", "Developer", "Admin"]),
 });
 
+const loginUserZodSchema = z.object({
+	email: z.email({
+		message: "Please provide a valid email address",
+	}),
+
+	password: z
+		.string()
+		.min(1, {
+			message: "Password is required",
+		}),
+});
+
+
 
 export const userValidation = {
 	registerUserZodSchema,
+	loginUserZodSchema
 };
