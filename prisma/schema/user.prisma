@@ -8,7 +8,7 @@ model User {
     profilePhoto    String?
     emailVerified   Boolean    @default(false)
 
-    // profile         Profile?
+    profile         Profile?
     // converSation    Conversation[]
 
     createdAt       DateTime @default(now())

@@ -7,10 +7,13 @@ import { userValidation } from "./auth.validation";
 const router = Router();
 
 // create user
-router.post("/register", validatedSchema(userValidation.registerUserZodSchema), auhtController.createUser);
+router.post("/register", 
+    validatedSchema(userValidation.registerUserZodSchema), 
+    auhtController.createUser
+);
 
-// verificaiton user
-// router.post("/verified-user", auhtController.veficationUser);
+// match the OTP and create the user
+router.post("/verified-user", auhtController.veficationUser);
 
 // Login user 
 // router.post("/login", auhtController.loginUser);

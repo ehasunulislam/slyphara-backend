@@ -19,7 +19,42 @@ const createUser = catchAsync(async(req: Request, res: Response, next: NextFunct
   });
 });
 
+// match the OTP and create the user
+const veficationUser = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+  const payload = req.body;
+
+  const result = await authService.verificationUser(payload);
+
+  const { accessToken, refreshToken, user } = result;
+
+  res.cookie("aToken", accessToken, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    maxAge: 1000 * 60 * 60 * 24,
+  });
+
+  res.cookie("rToken", refreshToken, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  });
+
+  sendResponse(res, {
+		statusCode: httpStatus.CREATED,
+		success: true,
+		message: "User registered successfully",
+		data: {
+			accessToken, 
+      refreshToken, 
+      user
+		},
+	});
+});
+
 
 export const auhtController = {
-    createUser
+    createUser,
+    veficationUser
 }
