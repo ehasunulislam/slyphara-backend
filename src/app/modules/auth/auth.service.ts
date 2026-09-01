@@ -9,7 +9,7 @@ import path from "path";
 import ejs from "ejs"
 import { UserStatus } from "../../../generated/prisma/enums";
 import { jwtUtils } from "../../utils/jwt";
-import { SignOptions } from "jsonwebtoken";
+import { JwtPayload, SignOptions } from "jsonwebtoken";
 
 // register user and send the OTP in redis 
 const createUserIntoDB = async(payload: IRegisterUser) => {
@@ -248,11 +248,49 @@ const loginUserFromDB = async(payload: ILoginUser) => {
     }
 }
 
+// giving a new refresh token 
+const refreshToken = async(refreshToken: string) => {
+    const verifyRefreshToken = jwtUtils.verifyToken(refreshToken, config.jwt_refresh_secret);
+
+    if(!verifyRefreshToken.success) {
+        throw new Error(verifyRefreshToken.error);
+    }
+
+    const { id } = verifyRefreshToken.data as JwtPayload;
+
+    const user = await prisma.user.findFirstOrThrow({
+        where: {
+            id
+        }
+    });
+
+    if(user.status === "BLOCKED") {
+        throw new Error("User is already blocked")
+    }
+
+    const jwtRefreshTokenPayload = {
+        id: user.id, 
+        name: user.name,
+        email: user.email,
+        role: user.role 
+    }
+
+    const accessToken = jwtUtils.createToken(
+        jwtRefreshTokenPayload, 
+        config.jwt_access_secret,
+        config.jwt_access_expires_in as SignOptions
+    );
+
+    return {
+        accessToken
+    }
+}
 
 
 
 export const authService = {
     createUserIntoDB,
     verificationUser,
-    loginUserFromDB
+    loginUserFromDB,
+    refreshToken
 }

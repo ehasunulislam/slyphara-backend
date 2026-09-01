@@ -21,8 +21,8 @@ router.post("/login",
     auhtController.loginUser
 );
 
-// m-21 agai giving a new accesstoken route
-// router.post("/refresh-token", auhtController.refreshToken);
+// m-21 again giving a new accesstoken route
+router.post("/refresh-token", auhtController.refreshToken);
 
 // forgot password
 // router.post("/forgot-password",  auhtController.forgotPassword); 

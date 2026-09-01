@@ -84,9 +84,34 @@ const loginUser = catchAsync(async(req: Request, res: Response, next: NextFuncti
     })
 });
 
+// giving a new refresh token 
+const refreshToken = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+  const refreshToken = req.cookies.rToken;
+
+  const { accessToken } = await authService.refreshToken(refreshToken);
+
+  res.cookie("my-token", accessToken, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "none",
+    maxAge: 10000 * 60 * 60 * 24
+  });
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Token Refresh successfully",
+    data: {
+      accessToken
+    }
+  })
+});
+
+
 
 export const auhtController = {
     createUser,
     veficationUser,
-    loginUser
+    loginUser,
+    refreshToken
 }
