@@ -1,0 +1,15 @@
+enum UserRole {
+  Student
+  Developer
+  Admin
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+}
