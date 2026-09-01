@@ -125,9 +125,20 @@ const forgotPassword = catchAsync(async(req: Request, res: Response, next: NextF
 	});
 });
 
+// reset passowrd
+const resetPassword = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+  const payload = req.body;
+
+  await authService.resetPassword(payload);
 
 
-
+  sendResponse(res, {
+		statusCode: httpStatus.CREATED,
+		success: true,
+		message: `Password reset successfully`,
+		data: null,
+	});
+});
 
 
 export const auhtController = {
@@ -135,5 +146,6 @@ export const auhtController = {
     veficationUser,
     loginUser,
     refreshToken,
-    forgotPassword
+    forgotPassword,
+    resetPassword
 }

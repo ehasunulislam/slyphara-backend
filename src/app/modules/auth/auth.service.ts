@@ -2,7 +2,7 @@ import { transporter } from "../../../lib/nodemailer";
 import { prisma } from "../../../lib/prisma";
 import { redisClient } from "../../../lib/redis";
 import config from "../../config";
-import { IForgotPasswordPayload, ILoginUser, IRegisterUser, IVerifiedEmail } from "./auth.interface";
+import { IForgotPasswordPayload, ILoginUser, IRegisterUser, IResetPasswordPayload, IVerifiedEmail } from "./auth.interface";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import path from "path";
@@ -339,10 +339,81 @@ const forgotPassword = async(payload: IForgotPasswordPayload) => {
     });
 }
 
+// reset password 
+const resetPassword = async(payload: IResetPasswordPayload) => {
+    const { email, otp, newPassword } = payload;
+
+    const isUserExist = await prisma.user.findUnique({
+        where: {
+            email
+        }
+    });
+
+    if(!isUserExist) {
+        throw new Error("User not found");
+    }
+
+    if(isUserExist?.status === "BLOCKED") {
+        throw new Error("User already blocked");
+    }
+
+    if(!isUserExist?.emailVerified) {
+        throw new Error("Email is not verified");
+    }
+
+    /* match the otp with redis */
+    const key = `forgot-password: ${isUserExist.email}`
+    const redisOtp = await redisClient.get(key);
+
+    if(!redisOtp) {
+        throw new Error("OTP not found");
+    }
+
+    if(redisOtp != otp) {
+        throw new Error("OTP not matched");
+    }
+
+    const hashPassword = await bcrypt.hash(newPassword, Number(config.bcrypt_salt_rounds));
+    
+
+    /* updated password */
+    await prisma.user.update({
+        where: {
+            email: isUserExist.email
+        }, 
+        data: {
+            password: hashPassword
+        }
+    });
+
+    /* delete the key with redis */
+    await redisClient.del([key]);
+
+
+    /* ejs processing */
+    const templatePath = path.join(process.cwd(), "/src/app/template/reset-password.ejs");
+    const templateData = {
+        name: isUserExist.name
+    };
+
+    const html = await ejs.renderFile(templatePath, templateData);
+
+
+    /* node mailer processing */
+    await transporter.sendMail({
+        from: config.email_sender,
+        to: isUserExist.email,
+        subject: "Reset Password Confirmation",
+        html
+    })
+}
+
+
 export const authService = {
     createUserIntoDB,
     verificationUser,
     loginUserFromDB,
     refreshToken,
-    forgotPassword
+    forgotPassword,
+    resetPassword
 }

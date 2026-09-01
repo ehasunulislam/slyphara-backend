@@ -28,7 +28,10 @@ router.post("/refresh-token", auhtController.refreshToken);
 router.post("/forgot-password", auhtController.forgotPassword); 
 
 // reset password
-// router.post("/reset-password", auhtController.resetPassword);
+router.post("/reset-password", 
+    validatedSchema(userValidation.resetPasswordZodSchema),
+    auhtController.resetPassword
+);
 
 
 export const  authRouter = router;
