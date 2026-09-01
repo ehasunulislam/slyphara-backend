@@ -3,6 +3,8 @@ import { catchAsync } from "../../utils/catchAsync";
 import { authService } from "./auth.service";
 import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from "http-status";
+import { IForgotPasswordPayload } from "./auth.interface";
+
 
 
 // register user and send the OTP in redis 
@@ -108,10 +110,30 @@ const refreshToken = catchAsync(async(req: Request, res: Response, next: NextFun
 });
 
 
+// forgot password 
+const forgotPassword = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+  const payload = req.body;
+
+  await authService.forgotPassword(payload);
+
+
+  sendResponse(res, {
+		statusCode: httpStatus.CREATED,
+		success: true,
+		message: `otp send at ${payload.email}`,
+		data: null,
+	});
+});
+
+
+
+
+
 
 export const auhtController = {
     createUser,
     veficationUser,
     loginUser,
-    refreshToken
+    refreshToken,
+    forgotPassword
 }

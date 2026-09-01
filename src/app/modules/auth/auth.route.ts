@@ -25,7 +25,7 @@ router.post("/login",
 router.post("/refresh-token", auhtController.refreshToken);
 
 // forgot password
-// router.post("/forgot-password",  auhtController.forgotPassword); 
+router.post("/forgot-password", auhtController.forgotPassword); 
 
 // reset password
 // router.post("/reset-password", auhtController.resetPassword);
