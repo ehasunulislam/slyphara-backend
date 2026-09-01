@@ -10,6 +10,7 @@ import httpStatus from "http-status";
 import config from "./app/config";
 import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
 import { notFound } from "./app/middleware/notFound";
+import { authRouter } from "./app/modules/auth/auth.route";
 
 
 const app: Application = express();
@@ -30,7 +31,7 @@ app.use(cookieParser());
 
 
 // Main Routes
-// app.use("/api/v1/auth", AuthRoutes);
+app.use("/api/v1/auth", authRouter);
 
 
 // test tryout
