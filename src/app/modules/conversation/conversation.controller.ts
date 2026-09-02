@@ -41,9 +41,29 @@ const getAllConversation  = catchAsync(async(req: Request, res: Response, next: 
 });
 
 
+// search conversation
+const searchConversation  = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const search = req.query.search as string;
+
+    const userId = req.user?.id as string;
+
+    const conversations = await conversationService.searchConversationFromDB(search, userId);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message:
+        "Conversations searched successfully",
+        data: {
+            conversations,
+        },
+    });
+})
+
+
 export const conversationController = {
     createConversation,
     getAllConversation,
+    searchConversation
     // getConversationById,
-    // searchConversation
 }

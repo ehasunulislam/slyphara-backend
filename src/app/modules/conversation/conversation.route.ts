@@ -20,6 +20,13 @@ router.get(
 );
 
 
+// search conversation
+router.get("/search",
+  auth(UserRole.Admin, UserRole.Developer, UserRole.Student),
+  conversationController.searchConversation
+);
+
+
 // // get conversation with id && login user
 // router.get(
 //     "/:id", 
@@ -27,15 +34,6 @@ router.get(
 //     conversationController.getConversationById
 // );
 
-// // search conversation
-// router.get(
-//   "/search",
-//   authMiddleware.auth(
-//     UserRole.Developer,
-//     UserRole.Student
-//   ),
-//   conversationController.searchConversation
-// );
 
 
 export const conversationRouter = router;
