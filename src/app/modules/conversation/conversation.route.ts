@@ -13,11 +13,11 @@ router.post(
 );
 
 // get conversation with login user
-// router.get(
-//     "/all-conversations", 
-//     authMiddleware.auth(UserRole.Developer, UserRole.Student),
-//     conversationController.getAllConversation
-// );
+router.get(
+    "/all-conversations", 
+    auth(UserRole.Admin, UserRole.Developer, UserRole.Student),
+    conversationController.getAllConversation
+);
 
 
 // // get conversation with id && login user

@@ -22,9 +22,28 @@ const createConversation = catchAsync(async(req: Request, res: Response, next: N
 });
 
 
+// get all conversation with login user
+const getAllConversation  = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?.id as string;
+
+    const getConversations = await conversationService.getAllConversationFromDB(
+        userId
+    );
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Conversations retrieved successfully",
+        data: {
+            getConversations
+        },
+    });
+});
+
+
 export const conversationController = {
     createConversation,
-    // getAllConversation,
+    getAllConversation,
     // getConversationById,
     // searchConversation
 }

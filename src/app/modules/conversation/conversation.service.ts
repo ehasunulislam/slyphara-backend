@@ -15,10 +15,24 @@ const createConversationIntoDB = async(payload: IConversation, userId: string) =
     return createConversation
 }
 
+// get all conversation with login user
+const getAllConversationFromDB = async(userId: string) => {
+    const getConversation = await prisma.conversation.findMany({
+        where: {
+            userId
+        }, 
+        orderBy: {
+            updatedAt: "desc"
+        }
+    });
+
+    return getConversation
+}
+
 
 export const conversationService = {
   createConversationIntoDB,
-//   getAllConversationFromDB,
+  getAllConversationFromDB,
 //   getConversationByIdFromDB,
 //   searchConversationFromDB
 };
