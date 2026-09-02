@@ -27,12 +27,11 @@ router.get("/search",
 );
 
 
-// // get conversation with id && login user
-// router.get(
-//     "/:id", 
-//     authMiddleware.auth(UserRole.Developer, UserRole.Student),
-//     conversationController.getConversationById
-// );
+// get conversation with id && login user
+router.get("/:id", 
+    auth(UserRole.Admin, UserRole.Developer, UserRole.Student),
+    conversationController.getConversationById
+);
 
 
 

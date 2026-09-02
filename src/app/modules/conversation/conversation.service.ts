@@ -49,10 +49,21 @@ const searchConversationFromDB = async(search: string, userId: string) => {
     return conversation
 }
 
+// get conversation with id && login user`  
+const getConversationByIdFromDB = async(userId: string, id: string) => {
+    const getConversationWithId = await prisma.conversation.findUnique({
+        where: {
+            userId, id
+        }
+    });
+
+    return getConversationWithId
+}
+
 
 export const conversationService = {
   createConversationIntoDB,
   getAllConversationFromDB,
-  searchConversationFromDB
-//   getConversationByIdFromDB,
+  searchConversationFromDB,
+  getConversationByIdFromDB
 };
