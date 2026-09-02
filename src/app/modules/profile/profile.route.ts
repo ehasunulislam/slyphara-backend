@@ -13,10 +13,10 @@ router.get("/me",
 );
 
 // update profile within login user
-// router.patch("/me", 
-//     auth(UserRole.Admin, UserRole.Student, UserRole.Developer),  
-//     profileController.updateProfile
-// );
+router.patch("/me", 
+    auth(UserRole.Admin, UserRole.Student, UserRole.Developer),  
+    profileController.updateProfile
+);
 
 
 export const profileRouter = router;

@@ -17,7 +17,23 @@ const getProfile = catchAsync(async(req: Request, res: Response, next: NextFunct
     });
 });
 
+
+// update profile within login user
+const updateProfile = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?.id as string; 
+    const payload = req.body
+
+    const profile = await profileService.updatedProfileFormDB(userId, payload);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Profile retrieved successfully",
+      data: profile,
+    });
+});
+
 export const profileController = {
     getProfile,
-    // updateProfile
+    updateProfile
 }
