@@ -13,7 +13,7 @@ import { JwtPayload, SignOptions } from "jsonwebtoken";
 
 // register user and send the OTP in redis 
 const createUserIntoDB = async(payload: IRegisterUser) => {
-    const { name, email, password, profilePhoto, role } = payload;
+    const { name, email, password, role } = payload;
 
     const isExistingUser = await prisma.user.findUnique({
         where: {
@@ -129,7 +129,6 @@ const verificationUser = async(payload: IVerifiedEmail) => {
             name: registerUserPayload.name,
             email: registerUserPayload.email,
             password: registerUserPayload.password,
-            profilePhoto: registerUserPayload.profilePhoto,
             role: registerUserPayload.role,
             status: UserStatus.ACTIVE,
             emailVerified: true,

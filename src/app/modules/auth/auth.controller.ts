@@ -29,14 +29,14 @@ const veficationUser = catchAsync(async(req: Request, res: Response, next: NextF
 
   const { accessToken, refreshToken, user } = result;
 
-  res.cookie("aToken", accessToken, {
+  res.cookie("accessToken", accessToken, {
     httpOnly: true,
     secure: false,
     sameSite: "lax",
     maxAge: 1000 * 60 * 60 * 24,
   });
 
-  res.cookie("rToken", refreshToken, {
+  res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: false,
     sameSite: "lax",
@@ -61,14 +61,14 @@ const loginUser = catchAsync(async(req: Request, res: Response, next: NextFuncti
 
     const { accessToken, refreshToken } = await authService.loginUserFromDB(payload);
 
-    res.cookie("aToken", accessToken, {
+    res.cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: false,
         sameSite: "none",
         maxAge: 1000 * 60 * 60 * 24  // 1 day
     });
 
-    res.cookie("rToken", refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: false,
         sameSite: "none",

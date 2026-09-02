@@ -10,7 +10,7 @@ import { prisma } from "../../lib/prisma";
 export interface RequestUser {
 	email: string;
 	name: string;
-	userId: string;
+	id: string;
 	role: UserRole;
 }
 
@@ -44,7 +44,7 @@ export const auth = (...requiredRoles: UserRole[]) => {
 			throw new Error(verifiedToken.error);
 		}
 
-		const { email, name, userId, role } = verifiedToken.data as JwtPayload;
+		const { email, name, id, role } = verifiedToken.data as JwtPayload;
 
 		if (requiredRoles.length && !requiredRoles.includes(role)) {
 			throw new Error(
@@ -54,7 +54,7 @@ export const auth = (...requiredRoles: UserRole[]) => {
 
 		const user = await prisma.user.findUnique({
 			where: {
-				id: userId,
+				id,
 				email,
 				name,
 				role,
@@ -72,7 +72,7 @@ export const auth = (...requiredRoles: UserRole[]) => {
 		req.user = {
 			email,
 			name,
-			userId,
+			id,
 			role,
 		};
 

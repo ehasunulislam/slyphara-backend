@@ -11,6 +11,7 @@ import config from "./app/config";
 import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
 import { notFound } from "./app/middleware/notFound";
 import { authRouter } from "./app/modules/auth/auth.route";
+import { profileRouter } from "./app/modules/profile/profile.route";
 
 
 const app: Application = express();
@@ -32,6 +33,7 @@ app.use(cookieParser());
 
 // Main Routes
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/profile", profileRouter);
 
 
 // test tryout
