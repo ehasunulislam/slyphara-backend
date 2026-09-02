@@ -25,7 +25,36 @@ const createMessageInToDB = async(payload: IMessageCreate) => {
 }
 
 
+// get message By Conversation Id && login user
+const getMessageById = async(conversationId: string, userId: string) => {
+    const findConversation = await prisma.conversation.findUnique({
+        where: {
+            id: conversationId
+        }
+    });
+
+    if(!findConversation) {
+        throw new AppError(httpStatus.NOT_FOUND, "Conversation not found");
+    }
+
+    if(findConversation.userId !== userId) {
+        throw new AppError(httpStatus.NOT_FOUND, "Unauthorized user");
+    }
+
+    const message = await prisma.message.findMany({
+        where: {
+            conversationId
+        },
+        orderBy: {
+            createdAt: "asc"
+        }
+    });
+
+    return message
+}
+
+
 export const messageService = {
   createMessageInToDB,
-//   getMessagesFromDB,
+  getMessageById
 };

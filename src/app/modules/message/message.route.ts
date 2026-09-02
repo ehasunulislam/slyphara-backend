@@ -14,10 +14,10 @@ router.post(
 );
 
 // get message By Conversation Id && login user
-// router.get(
-//     "/:conversationId",
-//     auth(UserRole.Developer, UserRole.Student),
-//     messageController.getMessages
-// );
+router.get(
+    "/:conversationId",
+    auth(UserRole.Developer, UserRole.Student),
+    messageController.getMessages
+);
 
 export const messageRouter = router;

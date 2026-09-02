@@ -3,6 +3,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { messageService } from "./message.service";
 
+// create message 
 const createMessage = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const payload = req.body;
 
@@ -20,7 +21,28 @@ const createMessage = catchAsync(async (req: Request, res: Response, next: NextF
 );
 
 
+// get message By Conversation Id && login user
+const getMessages = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const conversationId  = req.params.conversationId as string;
+    const userId = req.user?.id as string;
+
+    const messages = await messageService.getMessageById(
+      conversationId,
+      userId
+    );
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Messages retrieved successfully",
+      data: {
+        messages
+      },
+    });
+});
+
+
 export const messageController = {
   createMessage,
-//   getMessages
+  getMessages
 };
