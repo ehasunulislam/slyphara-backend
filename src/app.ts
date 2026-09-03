@@ -14,6 +14,7 @@ import { authRouter } from "./app/modules/auth/auth.route";
 import { profileRouter } from "./app/modules/profile/profile.route";
 import { conversationRouter } from "./app/modules/conversation/conversation.route";
 import { messageRouter } from "./app/modules/message/message.route";
+import { aiRouter } from "./app/modules/ai-message/ai.route";
 
 
 const app: Application = express();
@@ -38,6 +39,7 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/profile", profileRouter);
 app.use("/api/v1/conversation", conversationRouter);
 app.use("/api/v1/message", messageRouter);
+app.use("/api/v1/chat-with-ai", aiRouter);
 
 
 // test tryout
