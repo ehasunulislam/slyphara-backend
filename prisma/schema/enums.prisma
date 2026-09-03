@@ -13,3 +13,9 @@ enum MessageRole {
   USER
   ASSISTANT
 }
+
+enum SubscriptionPlan {
+  FREE
+  PRO
+}
+

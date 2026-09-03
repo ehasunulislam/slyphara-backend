@@ -1,4 +1,5 @@
-import { MessageRole } from "../../../generated/prisma/enums";
+import { endOfDay, startOfDay } from "date-fns";
+import { MessageRole, SubscriptionPlan, UserRole } from "../../../generated/prisma/enums";
 import { openRouter } from "../../../lib/openRouter";
 import { prisma } from "../../../lib/prisma";
 import { AppError } from "../../utils/AppError";
@@ -20,8 +21,37 @@ const createChatWithAiIntoDB = async(payload: IChat, userId: string) => {
     }
 
     if (conversation.userId !== userId) {
+        throw new AppError(httpStatus.NOT_FOUND, "Unauthorized");
+    }
+
+    /* find the user */
+    const user = await prisma.user.findUnique({
+        where: {
+            id: userId
+        }
+    });
+
+    if (!user) {
         throw new AppError(httpStatus.NOT_FOUND, "User not found");
     }
+
+    /* free user limit check */
+    if(user.role !== UserRole.Admin && user.subscriptionPlan === SubscriptionPlan.FREE) {
+        const usage = await prisma.messageUsage.findFirst({
+            where: {
+                userId,
+                createdAt: {
+                    gte: startOfDay(new Date()),
+                    lte: endOfDay(new Date()),
+                }
+            }
+        });
+
+        if (usage && usage.count >= 20) {
+            throw new AppError(httpStatus.FORBIDDEN,"Daily chat limit exceeded. Upgrade your plan.");
+        }
+    }
+
 
     /* save the user's message */
     const userMessage = await prisma.message.create({
@@ -32,7 +62,7 @@ const createChatWithAiIntoDB = async(payload: IChat, userId: string) => {
         }
     });
 
-    /* Get all messages of this conversation */
+    /* GET CONVERSATION HISTORY */
     const messages = await prisma.message.findMany({
         where: {
             conversationId
@@ -74,6 +104,41 @@ const createChatWithAiIntoDB = async(payload: IChat, userId: string) => {
             role: MessageRole.ASSISTANT
         }
     });
+
+    /* update the daily message */
+    if(user.role !== UserRole.Admin && user.subscriptionPlan === SubscriptionPlan.FREE) {
+        const usage = await prisma.messageUsage.findFirst({
+            where: {
+                userId,
+                createdAt: {
+                    gte: startOfDay(new Date()),
+                    lte: endOfDay(new Date()),
+                }
+            }
+        });
+
+        if(!usage) {
+            await prisma.messageUsage.create({
+                data: {
+                    userId, 
+                    count: 1,
+                    date: new Date()
+                }
+            });
+        } else {
+            await prisma.messageUsage.update({
+                where: {
+                    id: usage.id
+                },
+
+                data: {
+                    count: {
+                        increment: 1
+                    }
+                }
+            })
+        }
+    }
 
     return {
         conversationId,

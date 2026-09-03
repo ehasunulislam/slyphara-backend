@@ -9,6 +9,9 @@ model User {
 
     profile         Profile?
     converSation    Conversation[]
+    messageUsage     MessageUsage[]
+
+    subscriptionPlan SubscriptionPlan @default(FREE)
 
     createdAt       DateTime @default(now())
     updatedAt       DateTime @updatedAt   
