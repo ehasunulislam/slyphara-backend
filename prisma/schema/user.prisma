@@ -1,20 +1,25 @@
 model User {
-    id              String      @id @default(uuid())
-    name            String   
-    email           String      @unique
-    password        String
-    role            UserRole
-    status          UserStatus @default(ACTIVE)
-    emailVerified   Boolean    @default(false)
+  id            String     @id @default(uuid())
+  name          String
+  email         String     @unique
+  password      String
+  role          UserRole
+  status        UserStatus @default(ACTIVE)
+  emailVerified Boolean    @default(false)
+  isPremimum   Boolean     @default(false)
 
-    profile         Profile?
-    converSation    Conversation[]
-    messageUsage     MessageUsage[]
+  profile      Profile?
+  converSation Conversation[]
+  messageUsage MessageUsage[]
 
-    subscriptionPlan SubscriptionPlan @default(FREE)
+  subscriptionPlan  SubscriptionPlan @default(FREE)
+  subscriptionStart DateTime?
+  subscriptionEnd   DateTime?
 
-    createdAt       DateTime @default(now())
-    updatedAt       DateTime @updatedAt   
+  subscription Subscription?
 
-    @@map("user")    
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user")
 }

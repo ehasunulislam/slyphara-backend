@@ -35,11 +35,34 @@ const createChatWithAiIntoDB = async(payload: IChat, userId: string) => {
         throw new AppError(httpStatus.NOT_FOUND, "User not found");
     }
 
+    const isAdmin = user.role === UserRole.Admin;
+    const isPremimumActive = user.subscriptionPlan === SubscriptionPlan.HALF_YEARLY &&
+                             user.subscriptionEnd !== null &&
+                             user.subscriptionEnd > new Date();
+
+    const dailyLimit = isAdmin ? null : isPremimumActive ? 100 : 20
+
     /* free user limit check */
-    if(user.role !== UserRole.Admin && user.subscriptionPlan === SubscriptionPlan.FREE) {
+    // if(user.role !== UserRole.Admin && user.subscriptionPlan === SubscriptionPlan.FREE) {
+    //     const usage = await prisma.messageUsage.findFirst({
+    //         where: {
+    //             userId,
+    //             createdAt: {
+    //                 gte: startOfDay(new Date()),
+    //                 lte: endOfDay(new Date()),
+    //             }
+    //         }
+    //     });
+
+    //     if (usage && usage.count >= 20) {
+    //         throw new AppError(httpStatus.FORBIDDEN,"Daily chat limit exceeded. Upgrade your plan.");
+    //     }
+    // }
+
+    if(dailyLimit) {
         const usage = await prisma.messageUsage.findFirst({
             where: {
-                userId,
+                userId, 
                 createdAt: {
                     gte: startOfDay(new Date()),
                     lte: endOfDay(new Date()),
@@ -47,8 +70,8 @@ const createChatWithAiIntoDB = async(payload: IChat, userId: string) => {
             }
         });
 
-        if (usage && usage.count >= 20) {
-            throw new AppError(httpStatus.FORBIDDEN,"Daily chat limit exceeded. Upgrade your plan.");
+        if(usage && usage.count >= dailyLimit) {
+            throw new AppError(httpStatus.FORBIDDEN,  `Daily chat limit exceeded. Your limit is ${dailyLimit} chats per day.`)
         }
     }
 
@@ -106,10 +129,43 @@ const createChatWithAiIntoDB = async(payload: IChat, userId: string) => {
     });
 
     /* update the daily message */
-    if(user.role !== UserRole.Admin && user.subscriptionPlan === SubscriptionPlan.FREE) {
+    // if(user.role !== UserRole.Admin && user.subscriptionPlan === SubscriptionPlan.FREE) {
+    //     const usage = await prisma.messageUsage.findFirst({
+    //         where: {
+    //             userId,
+    //             createdAt: {
+    //                 gte: startOfDay(new Date()),
+    //                 lte: endOfDay(new Date()),
+    //             }
+    //         }
+    //     });
+
+    //     if(!usage) {
+    //         await prisma.messageUsage.create({
+    //             data: {
+    //                 userId, 
+    //                 count: 1,
+    //                 date: new Date()
+    //             }
+    //         });
+    //     } else {
+    //         await prisma.messageUsage.update({
+    //             where: {
+    //                 id: usage.id
+    //             },
+
+    //             data: {
+    //                 count: {
+    //                     increment: 1
+    //                 }
+    //             }
+    //         })
+    //     }
+    // }
+    if (dailyLimit !== null) {
         const usage = await prisma.messageUsage.findFirst({
             where: {
-                userId,
+                userId, 
                 createdAt: {
                     gte: startOfDay(new Date()),
                     lte: endOfDay(new Date()),

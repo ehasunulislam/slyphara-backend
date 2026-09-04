@@ -1,14 +1,13 @@
 model Conversation {
-    id              String      @id @default(uuid())
-    userId          String
-    title           String
+  id     String @id @default(uuid())
+  userId String
+  title  String
 
+  user     User      @relation(fields: [userId], references: [id])
+  messages Message[]
 
-    user            User        @relation(fields: [userId], references: [id])
-    messages        Message[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    createdAt       DateTime    @default(now())
-    updatedAt       DateTime    @updatedAt
-
-    @@map("conversation")
+  @@map("conversation")
 }

@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { aiService } from "./ai.service";
 import { sendResponse } from "../../utils/sendResponse";
+import httpStatus from "http-status";
 
 // create the chat with AI into DB
 const createChatAithAiIntoDB = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
@@ -13,7 +14,7 @@ const createChatAithAiIntoDB = catchAsync(async(req: Request, res: Response, nex
     );
 
     sendResponse(res, {
-      statusCode: 200,
+      statusCode: httpStatus.OK,
       success: true,
       message: "AI response generated successfully",
       data: {

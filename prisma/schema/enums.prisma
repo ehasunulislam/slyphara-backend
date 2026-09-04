@@ -16,6 +16,11 @@ enum MessageRole {
 
 enum SubscriptionPlan {
   FREE
-  PRO
+  HALF_YEARLY
 }
 
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}

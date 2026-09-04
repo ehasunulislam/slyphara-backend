@@ -23,11 +23,16 @@ export default {
 	smtp_pass: process.env.SMTP_PASS!,
 	email_sender: process.env.EMAIL_SERNDER!,
 
-	open_router: process.env.OPEN_ROUTER_API_KEY!
+	open_router: process.env.OPEN_ROUTER_API_KEY!,
+
+	// stripe_product_id: process.env.STRIPE_PRODUCT_ID!,
+	stripe_secret_key: process.env.STRIPE_SECRET_KEY!,
+	stripe_publish_key: process.env.STRIPE_PUBLISH_KEY!,
 
 	// cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
 	// cloudinary_api_key: process.env.CLOUDINARY_API_KEY!,
 	// cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET!,
+
 	// bkash_base_url : process.env.BKASH_BASE_URL!,
 	// bkash_username : process.env.BKASH_USERNAME!,
 	// bkash_password : process.env.BKASH_PASSWORD!,
