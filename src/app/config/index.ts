@@ -29,9 +29,9 @@ export default {
 	stripe_secret_key: process.env.STRIPE_SECRET_KEY!,
 	stripe_publish_key: process.env.STRIPE_PUBLISH_KEY!,
 
-	// cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
-	// cloudinary_api_key: process.env.CLOUDINARY_API_KEY!,
-	// cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET!,
+	cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
+	cloudinary_api_key: process.env.CLOUDINARY_API_KEY!,
+	cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET!,
 
 	// bkash_base_url : process.env.BKASH_BASE_URL!,
 	// bkash_username : process.env.BKASH_USERNAME!,

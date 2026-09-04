@@ -8,7 +8,7 @@ import httpStatus from "http-status";
 
 // create the chat with AI into DB
 const createChatWithAiIntoDB = async(payload: IChat, userId: string) => {
-    const {conversationId, message} = payload;
+    const {conversationId, message, type} = payload;
 
     const conversation = await prisma.conversation.findUnique({
         where: {
@@ -40,25 +40,9 @@ const createChatWithAiIntoDB = async(payload: IChat, userId: string) => {
                              user.subscriptionEnd !== null &&
                              user.subscriptionEnd > new Date();
 
-    const dailyLimit = isAdmin ? null : isPremimumActive ? 100 : 20
+    const dailyLimit = isAdmin ? null : isPremimumActive ? 100 : 20;
 
     /* free user limit check */
-    // if(user.role !== UserRole.Admin && user.subscriptionPlan === SubscriptionPlan.FREE) {
-    //     const usage = await prisma.messageUsage.findFirst({
-    //         where: {
-    //             userId,
-    //             createdAt: {
-    //                 gte: startOfDay(new Date()),
-    //                 lte: endOfDay(new Date()),
-    //             }
-    //         }
-    //     });
-
-    //     if (usage && usage.count >= 20) {
-    //         throw new AppError(httpStatus.FORBIDDEN,"Daily chat limit exceeded. Upgrade your plan.");
-    //     }
-    // }
-
     if(dailyLimit) {
         const usage = await prisma.messageUsage.findFirst({
             where: {
@@ -81,7 +65,8 @@ const createChatWithAiIntoDB = async(payload: IChat, userId: string) => {
         data: {
             conversationId,
             content: message,
-            role: MessageRole.USER
+            role: MessageRole.USER,
+            messageType: type
         }
     });
 
@@ -95,7 +80,6 @@ const createChatWithAiIntoDB = async(payload: IChat, userId: string) => {
         }
     });
 
-    
     /* open router functionality */
     const formateMessages = messages.map((msg) => ({
         role: 
@@ -124,44 +108,12 @@ const createChatWithAiIntoDB = async(payload: IChat, userId: string) => {
         data: {
             conversationId,
             content: apiResponseText,
-            role: MessageRole.ASSISTANT
+            role: MessageRole.ASSISTANT,
+            messageType: type
         }
     });
 
     /* update the daily message */
-    // if(user.role !== UserRole.Admin && user.subscriptionPlan === SubscriptionPlan.FREE) {
-    //     const usage = await prisma.messageUsage.findFirst({
-    //         where: {
-    //             userId,
-    //             createdAt: {
-    //                 gte: startOfDay(new Date()),
-    //                 lte: endOfDay(new Date()),
-    //             }
-    //         }
-    //     });
-
-    //     if(!usage) {
-    //         await prisma.messageUsage.create({
-    //             data: {
-    //                 userId, 
-    //                 count: 1,
-    //                 date: new Date()
-    //             }
-    //         });
-    //     } else {
-    //         await prisma.messageUsage.update({
-    //             where: {
-    //                 id: usage.id
-    //             },
-
-    //             data: {
-    //                 count: {
-    //                     increment: 1
-    //                 }
-    //             }
-    //         })
-    //     }
-    // }
     if (dailyLimit !== null) {
         const usage = await prisma.messageUsage.findFirst({
             where: {
