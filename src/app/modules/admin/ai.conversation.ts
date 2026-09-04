@@ -18,7 +18,19 @@ const getAllUser = catchAsync(async(req: Request, res: Response, next: NextFunct
     });
 });
 
+// get payments analitics
+const getPaymentAnalytics = catchAsync(async(req: Request, res: Response, next: NextFunction) =>{
+    const analytics = await adminService.getPaymentAnalytics();
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "Bookings retrieved successfully",
+        data: analytics,
+    });
+});
 
 export const adminController = {
-    getAllUser
+    getAllUser,
+    getPaymentAnalytics
 }

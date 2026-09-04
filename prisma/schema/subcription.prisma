@@ -9,7 +9,6 @@ model Subscription {
 
   stripeSessionId String? @unique
   stripePaymentId String? @unique
-  transactionId   String? @unique
 
   currency String @default("usd")
 

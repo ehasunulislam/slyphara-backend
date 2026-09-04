@@ -10,6 +10,13 @@ const router = Router();
     "/all-users", 
     auth(UserRole.Admin),
     adminController.getAllUser
-)
+);
+
+// get payments analitics
+ router.get(
+    "/analytics", 
+    auth(UserRole.Admin),
+    adminController.getPaymentAnalytics
+);
 
 export const adminRouter = router;
