@@ -1,4 +1,7 @@
+import { PaymentStatus, SubscriptionPlan } from "../../../generated/prisma/enums";
 import { prisma } from "../../../lib/prisma";
+import { IPaymentHistory } from "./ai.interface";
+
 
 // get all user
 const getAllUserFromDB = async() => {
@@ -52,7 +55,69 @@ const getPaymentAnalytics = async() => {
 }
 
 
+// get all payment history
+const getPaymentHistory = async(payload: IPaymentHistory) => {
+    const { email, paymentStatus, stripeSessionId, stripePaymentId, subscriptionPlan} = payload;
+
+    const payments = await prisma.subscription.findMany({
+        where: {
+            ...(paymentStatus && {
+                status: paymentStatus as PaymentStatus
+            }),
+
+            ...(stripeSessionId && {
+                stripeSessionId: {
+                contains: stripeSessionId,
+                mode: "insensitive",
+                },
+            }),
+
+            ...(stripePaymentId && {
+                stripePaymentId: {
+                contains: stripePaymentId,
+                mode: "insensitive",
+                },
+            }),
+
+            ...(subscriptionPlan && {
+                plan: subscriptionPlan as SubscriptionPlan,
+            }),
+
+            ...(email && {
+                user: {
+                email: {
+                    contains: email,
+                    mode: "insensitive",
+                },
+                },
+            }),
+        }, 
+
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    role: true,
+                    subscriptionPlan: true,
+                    subscriptionStart: true,
+                    subscriptionEnd: true
+                }
+            }
+        },
+
+        orderBy: {
+            createdAt: "desc"
+        }
+    });
+
+    return payments
+}
+
+
 export const adminService = {
     getAllUserFromDB,
-    getPaymentAnalytics
+    getPaymentAnalytics,
+    getPaymentHistory
 }

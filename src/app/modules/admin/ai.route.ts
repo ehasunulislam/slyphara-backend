@@ -19,4 +19,12 @@ const router = Router();
     adminController.getPaymentAnalytics
 );
 
+
+// get payments history
+ router.get(
+    "/payment-history", 
+    auth(UserRole.Admin),
+    adminController.getPaymentHistory
+);
+
 export const adminRouter = router;
