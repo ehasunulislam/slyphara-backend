@@ -16,6 +16,7 @@ import { conversationRouter } from "./app/modules/conversation/conversation.rout
 import { messageRouter } from "./app/modules/message/message.route";
 import { aiRouter } from "./app/modules/ai-message/ai.route";
 import { subscriptionRouter } from "./app/modules/subscription/subscription.route";
+import { adminRouter } from "./app/modules/admin/ai.route";
 
 
 const app: Application = express();
@@ -42,6 +43,7 @@ app.use("/api/v1/conversation", conversationRouter);
 app.use("/api/v1/message", messageRouter);
 app.use("/api/v1/chat-with-ai", aiRouter);
 app.use("/api/v1/subscription", subscriptionRouter);
+app.use("/api/v1/admin", adminRouter);
 
 
 // test tryout
