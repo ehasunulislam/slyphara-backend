@@ -80,10 +80,24 @@ const unBlockedUser = catchAsync(async(req: Request, res: Response, next: NextFu
 });
 
 
+// get all conversation with message
+const getAllConversationForAdmin = catchAsync(async(req: Request, res: Response, next: NextFunction) =>{
+    const conversationMessage = await adminService.getAllConversationForAdmin();
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "All Conversation And Messages",
+        data: conversationMessage,
+    });
+});
+
+
 export const adminController = {
     getAllUser,
     getPaymentAnalytics,
     getPaymentHistory,
     blockedUser,
-    unBlockedUser
+    unBlockedUser,
+    getAllConversationForAdmin
 }

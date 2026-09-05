@@ -41,5 +41,11 @@ const router = Router();
     adminController.unBlockedUser
 );
 
+// get all conversation with message
+router.get(
+  "/conversations",
+  auth(UserRole.Admin),
+  adminController.getAllConversationForAdmin
+);
 
 export const adminRouter = router;

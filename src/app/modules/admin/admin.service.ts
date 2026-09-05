@@ -184,11 +184,67 @@ const unBlockedUser = async(payload: IUserStatusUpdate) => {
     return unBlockedUser
 }
 
+// get all conversation with message
+// const getAllConversationForAdmin = async () => {
+//   const conversations = await prisma.conversation.findMany({
+//     include: {
+//       user: {
+//         select: {
+//           id: true,
+//           name: true,
+//           email: true,
+//           role: true,
+//         },
+//       },
+
+//       _count: {
+//         select: {
+//           messages: true,
+//         },
+//       },
+//     },
+
+//     orderBy: {
+//       updatedAt: "desc",
+//     },
+//   });
+
+//   return conversations;
+// };
+
+const getAllConversationForAdmin = async () => {
+  const messages = await prisma.message.findMany({
+    include: {
+      conversation: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              role: true,
+            },
+          },
+        },
+      },
+    },
+
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
+
+  return messages;
+};
+
+
+
 
 export const adminService = {
     getAllUserFromDB,
     getPaymentAnalytics,
     getPaymentHistory,
     blockedUser,
-    unBlockedUser
+    unBlockedUser,
+    getAllConversationForAdmin
 }
