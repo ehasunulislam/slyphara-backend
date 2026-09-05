@@ -4,6 +4,11 @@ model Profile {
   linkedin String?
   github   String?
 
+  studentIdCardNumber String?
+  institutionName String?
+
+  isStudentVerified Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

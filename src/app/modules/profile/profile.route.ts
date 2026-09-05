@@ -2,6 +2,8 @@ import { Router } from "express";
 import { profileController } from "./profile.controller";
 import { auth } from "../../middleware/checkAuth";
 import { UserRole } from "../../../generated/prisma/enums";
+import { validatedSchema } from "../../middleware/validedUserSchema";
+import { profileSchema } from "./profile.validation";
 
 
 const router = Router();
@@ -15,6 +17,7 @@ router.get("/me",
 // update profile within login user
 router.patch("/me", 
     auth(UserRole.Admin, UserRole.Student, UserRole.Developer),  
+    validatedSchema(profileSchema.updateProfileValidationSchema),
     profileController.updateProfile
 );
 

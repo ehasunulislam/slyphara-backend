@@ -23,26 +23,46 @@ const getProfileFormDB = async(userId: string) => {
 };
 
 // update profile within login user
-const updatedProfileFormDB = async(userId: string, payload:IUpdateProfile) => {
-    const profile = await prisma.profile.update({
-        where: {
-            userId
-        },
-        data: {
-            linkedin: payload.linkedin,
-            github: payload.github
-        },
-        include: {
-            user: {
-                select: {
-                    id: true
-                }
-            }
-        }
-    });
+const updatedProfileFormDB = async (userId: string, payload: IUpdateProfile) => {
+  const profile = await prisma.profile.update({
+    where: {
+      userId,
+    },
 
-    return profile
-}
+    data: {
+      ...(payload.linkedin !== undefined && {
+        linkedin: payload.linkedin,
+      }),
+
+      ...(payload.github !== undefined && {
+        github: payload.github,
+      }),
+
+      ...(payload.studentIdCardNumber !== undefined && {
+            studentIdCardNumber: payload.studentIdCardNumber
+        }),
+
+      ...(payload.institutionName !== undefined && {
+        institutionName: payload.institutionName,
+      }),
+
+      isStudentVerified: true
+    },
+
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+        },
+      },
+    },
+  });
+
+  return profile;
+};
 
 
 export const profileService = {
