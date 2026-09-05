@@ -48,4 +48,11 @@ router.get(
   adminController.getAllConversationForAdmin
 );
 
+// get developer analytics
+router.get(
+  "/developer-analytics",
+  auth(UserRole.Admin),
+  adminController.getDeveloperAnalytics
+);
+
 export const adminRouter = router;

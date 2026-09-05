@@ -1,3 +1,4 @@
+import { subMonths } from "date-fns";
 import { PaymentStatus, SubscriptionPlan, UserRole, UserStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../../lib/prisma";
 import { AppError } from "../../utils/AppError";
@@ -185,33 +186,6 @@ const unBlockedUser = async(payload: IUserStatusUpdate) => {
 }
 
 // get all conversation with message
-// const getAllConversationForAdmin = async () => {
-//   const conversations = await prisma.conversation.findMany({
-//     include: {
-//       user: {
-//         select: {
-//           id: true,
-//           name: true,
-//           email: true,
-//           role: true,
-//         },
-//       },
-
-//       _count: {
-//         select: {
-//           messages: true,
-//         },
-//       },
-//     },
-
-//     orderBy: {
-//       updatedAt: "desc",
-//     },
-//   });
-
-//   return conversations;
-// };
-
 const getAllConversationForAdmin = async () => {
   const messages = await prisma.message.findMany({
     include: {
@@ -238,6 +212,64 @@ const getAllConversationForAdmin = async () => {
 };
 
 
+// get developer analytics
+const getDeveloperAnalytics = async () => {
+  const threeMonthsAgo = subMonths(new Date(), 3);
+
+  const analytics = await prisma.messageUsage.groupBy({
+    by: ["userId"],
+
+    where: {
+      createdAt: {
+        gte: threeMonthsAgo,
+      },
+
+      user: {
+        role: UserRole.Developer,
+      },
+    },
+
+    _sum: {
+      count: true,
+    },
+
+    orderBy: {
+      _sum: {
+        count: "desc",
+      },
+    },
+  });
+
+  const developers = await Promise.all(
+    analytics.map(async (item) => {
+      const user = await prisma.user.findUnique({
+        where: {
+          id: item.userId,
+        },
+
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          projectAccess: true,
+        },
+      });
+
+      return {
+        ...user,
+        totalMessages: item._sum.count || 0,
+      };
+    })
+  );
+
+  return {
+    totalDevelopers: developers.length,
+    topDeveloper: developers[0] || null,
+    developers,
+  };
+};
+
 
 
 export const adminService = {
@@ -246,5 +278,6 @@ export const adminService = {
     getPaymentHistory,
     blockedUser,
     unBlockedUser,
-    getAllConversationForAdmin
+    getAllConversationForAdmin,
+    getDeveloperAnalytics
 }

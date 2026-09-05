@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { adminService } from "./admin.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { PaymentStatus, SubscriptionPlan } from "../../../generated/prisma/enums";
+import httpStatus from "http-status"
 
 
 // get all user
@@ -11,7 +12,7 @@ const getAllUser = catchAsync(async(req: Request, res: Response, next: NextFunct
 
     sendResponse(res, {
         success: true,
-        statusCode: 200,
+        statusCode: httpStatus.OK,
         message: "Bookings retrieved successfully",
         data: {
             users
@@ -25,7 +26,7 @@ const getPaymentAnalytics = catchAsync(async(req: Request, res: Response, next: 
 
     sendResponse(res, {
         success: true,
-        statusCode: 200,
+        statusCode: httpStatus.OK,
         message: "Bookings retrieved successfully",
         data: analytics,
     });
@@ -44,7 +45,7 @@ const getPaymentHistory = catchAsync(async(req: Request, res: Response, next: Ne
 
     sendResponse(res, {
         success: true,
-        statusCode: 200,
+        statusCode: httpStatus.OK,
         message: "Bookings retrieved successfully",
         data: paymentHistory,
     });
@@ -59,7 +60,7 @@ const blockedUser = catchAsync(async(req: Request, res: Response, next: NextFunc
 
     sendResponse(res, {
         success: true,
-        statusCode: 200,
+        statusCode: httpStatus.OK,
         message: "User Blocked Successfully",
         data: blockedUser,
     });
@@ -73,8 +74,8 @@ const unBlockedUser = catchAsync(async(req: Request, res: Response, next: NextFu
 
     sendResponse(res, {
         success: true,
-        statusCode: 200,
-        message: "User Blocked Successfully",
+        statusCode: httpStatus.OK,
+        message: "User Unblocked Successfully",
         data: unBlockedUser,
     });
 });
@@ -86,12 +87,24 @@ const getAllConversationForAdmin = catchAsync(async(req: Request, res: Response,
 
     sendResponse(res, {
         success: true,
-        statusCode: 200,
+        statusCode: httpStatus.OK,
         message: "All Conversation And Messages",
         data: conversationMessage,
     });
 });
 
+
+// get developer analytics
+const getDeveloperAnalytics = catchAsync(async(req: Request, res: Response, next: NextFunction) =>{
+    const result = await adminService.getDeveloperAnalytics();
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Developer analitics retrieved successfully",
+        data: result,
+    });
+});
 
 export const adminController = {
     getAllUser,
@@ -99,5 +112,6 @@ export const adminController = {
     getPaymentHistory,
     blockedUser,
     unBlockedUser,
-    getAllConversationForAdmin
+    getAllConversationForAdmin,
+    getDeveloperAnalytics
 }
