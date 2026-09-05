@@ -5,3 +5,7 @@ export interface IPaymentHistory {
     stripePaymentId: string,
     subscriptionPlan: string
 }
+
+export interface IUserStatusUpdate {
+    email: string
+}

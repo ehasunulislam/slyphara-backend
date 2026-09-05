@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { auth } from "../../middleware/checkAuth";
 import { UserRole } from "../../../generated/prisma/enums";
-import { adminController } from "./ai.conversation";
+import { adminController } from "./admin.conversation";
 
 const router = Router();
 
@@ -26,5 +26,20 @@ const router = Router();
     auth(UserRole.Admin),
     adminController.getPaymentHistory
 );
+
+// Block the single user within update
+ router.patch(
+    "/blocked-user", 
+    auth(UserRole.Admin),
+    adminController.blockedUser
+);
+
+// unBlock the single user within update
+ router.patch(
+    "/unBlocked-user", 
+    auth(UserRole.Admin),
+    adminController.unBlockedUser
+);
+
 
 export const adminRouter = router;

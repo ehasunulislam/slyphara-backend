@@ -1,6 +1,6 @@
 import { catchAsync } from "../../utils/catchAsync";
 import { NextFunction, Request, Response } from "express";
-import { adminService } from "./ai.service";
+import { adminService } from "./admin.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { PaymentStatus, SubscriptionPlan } from "../../../generated/prisma/enums";
 
@@ -51,8 +51,39 @@ const getPaymentHistory = catchAsync(async(req: Request, res: Response, next: Ne
 });
 
 
+// Block the single user within update
+const blockedUser = catchAsync(async(req: Request, res: Response, next: NextFunction) =>{
+    const email = req.body
+
+    const blockedUser = await adminService.blockedUser(email);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "User Blocked Successfully",
+        data: blockedUser,
+    });
+});
+
+// UnBlock the single user within update
+const unBlockedUser = catchAsync(async(req: Request, res: Response, next: NextFunction) =>{
+    const email = req.body
+
+    const unBlockedUser = await adminService.unBlockedUser(email);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "User Blocked Successfully",
+        data: unBlockedUser,
+    });
+});
+
+
 export const adminController = {
     getAllUser,
     getPaymentAnalytics,
-    getPaymentHistory
+    getPaymentHistory,
+    blockedUser,
+    unBlockedUser
 }

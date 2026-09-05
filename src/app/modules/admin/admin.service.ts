@@ -1,6 +1,8 @@
-import { PaymentStatus, SubscriptionPlan } from "../../../generated/prisma/enums";
+import { PaymentStatus, SubscriptionPlan, UserRole, UserStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../../lib/prisma";
-import { IPaymentHistory } from "./ai.interface";
+import { AppError } from "../../utils/AppError";
+import { IPaymentHistory, IUserStatusUpdate } from "./admin.interface";
+import httpStatus from "http-status"
 
 
 // get all user
@@ -116,8 +118,77 @@ const getPaymentHistory = async(payload: IPaymentHistory) => {
 }
 
 
+// Block the single user within update
+const blockedUser = async(payload: IUserStatusUpdate) => {
+    const { email } = payload;
+
+    const user = await prisma.user.findUnique({
+        where: {
+            email
+        }
+    });
+
+    if(!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User Not Found")
+    }
+
+    if(user.role === UserRole.Admin) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Admin account cannot be blocked")
+    }
+
+    if(user.status === "BLOCKED"){
+        throw new AppError(httpStatus.BAD_REQUEST, "User already blocked")
+    }
+
+    const blockedUser = await prisma.user.update({
+        where: {
+            email
+        }, 
+
+        data: {
+            status: UserStatus.BLOCKED
+        }
+    });
+
+    return blockedUser
+}
+
+// Un-Block the single user within update
+const unBlockedUser = async(payload: IUserStatusUpdate) => {
+    const { email } = payload;
+
+    const user = await prisma.user.findUnique({
+        where: {
+            email
+        }
+    });
+
+    if(!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User Not Found")
+    }
+
+    if(user.status === "ACTIVE"){
+        throw new AppError(httpStatus.BAD_REQUEST, "User already Active")
+    }
+
+    const unBlockedUser = await prisma.user.update({
+        where: {
+            email
+        }, 
+
+        data: {
+            status: UserStatus.ACTIVE
+        }
+    });
+
+    return unBlockedUser
+}
+
+
 export const adminService = {
     getAllUserFromDB,
     getPaymentAnalytics,
-    getPaymentHistory
+    getPaymentHistory,
+    blockedUser,
+    unBlockedUser
 }
