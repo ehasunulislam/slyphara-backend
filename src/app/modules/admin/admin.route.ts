@@ -55,4 +55,22 @@ router.get(
   adminController.getDeveloperAnalytics
 );
 
+// Project Grant Access
+router.patch("/grant-project-access",
+    auth(UserRole.Admin),
+    adminController.grantProjectAccess
+);
+
+// Project Remove Access
+router.patch("/remove-project-access",
+    auth(UserRole.Admin),
+    adminController.removeProjectAccess
+);
+
+// Get All Project Access
+router.get("/project-developers",
+    auth(UserRole.Admin),
+    adminController.getProjectDevelopers
+);
+
 export const adminRouter = router;

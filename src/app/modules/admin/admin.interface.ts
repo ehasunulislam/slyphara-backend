@@ -9,4 +9,3 @@ export interface IPaymentHistory {
 export interface IUserStatusUpdate {
     email: string
 }
-

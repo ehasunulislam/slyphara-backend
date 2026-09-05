@@ -270,6 +270,101 @@ const getDeveloperAnalytics = async () => {
   };
 };
 
+// Give Project Access - Developer
+const grantProjectAccess = async(email: string) => {
+    const user = await prisma.user.findUnique({
+        where: {
+            email: email.toLocaleLowerCase().trim()
+        }
+    });
+
+    if(!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User not found");
+    }
+
+    if(user.role !== UserRole.Developer) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Only developer can get project access");
+    }
+
+    const updatedUser = await prisma.user.update({
+        where: {
+            email: user.email
+        }, 
+
+        data: {
+            projectAccess: true
+        },
+
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            projectAccess: true
+        }
+    });
+
+    return updatedUser
+}
+
+// Remove Project Access - Developer
+const removeProjectAccess = async(email: string) => {
+    const user = await prisma.user.findUnique({
+        where: {
+            email: email.toLocaleLowerCase().trim()
+        }
+    });
+
+    if(!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User not found");
+    }
+
+    const updatedUser = await prisma.user.update({
+        where: {
+            email: user.email
+        },
+
+        data: {
+            projectAccess: false
+        },
+
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            projectAccess: true
+        }
+    });
+
+    return updatedUser;
+}
+
+// Get All Project Developers
+const getProjectDevelopers = async() => {
+
+    const developers = await prisma.user.findMany({
+        where: {
+            role: UserRole.Developer,
+            projectAccess: true
+        },
+
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            projectAccess: true,
+            createdAt: true
+        },
+
+        orderBy: {
+            createdAt: "desc"
+        }
+    });
+
+    return developers;
+};
 
 
 export const adminService = {
@@ -279,5 +374,8 @@ export const adminService = {
     blockedUser,
     unBlockedUser,
     getAllConversationForAdmin,
-    getDeveloperAnalytics
+    getDeveloperAnalytics,
+    grantProjectAccess,
+    removeProjectAccess,
+    getProjectDevelopers
 }

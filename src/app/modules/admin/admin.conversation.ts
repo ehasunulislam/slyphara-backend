@@ -106,6 +106,52 @@ const getDeveloperAnalytics = catchAsync(async(req: Request, res: Response, next
     });
 });
 
+// Project Grant Access
+const grantProjectAccess  = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const { email } = req.body;
+
+    const result = await adminService.grantProjectAccess(email);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Project access granted successfully",
+        data: result,
+    });
+});
+
+
+
+// Project Remove Access
+const removeProjectAccess  = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const { email } = req.body;
+
+    const result = await adminService.removeProjectAccess(email);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Project access removed successfully",
+        data: result,
+    });
+});
+
+
+// Get All Project Access
+const getProjectDevelopers  = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const result = await adminService.getProjectDevelopers();
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Project developers retrieved successfully",
+        data: result,
+    });
+});
+
+
+
+
 export const adminController = {
     getAllUser,
     getPaymentAnalytics,
@@ -113,5 +159,8 @@ export const adminController = {
     blockedUser,
     unBlockedUser,
     getAllConversationForAdmin,
-    getDeveloperAnalytics
+    getDeveloperAnalytics,
+    grantProjectAccess,
+    removeProjectAccess,
+    getProjectDevelopers
 }
