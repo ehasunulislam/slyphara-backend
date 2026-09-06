@@ -3,4 +3,5 @@ export  interface IUpdateProfile {
   github?: string;
   studentIdCardNumber?: string;
   institutionName?: string;
+  profileImg?: string;
 }

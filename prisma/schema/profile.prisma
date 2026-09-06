@@ -1,11 +1,12 @@
 model Profile {
-  id       String  @id @default(uuid())
-  userId   String  @unique
-  linkedin String?
-  github   String?
+  id         String  @id @default(uuid())
+  userId     String  @unique
+  linkedin   String?
+  github     String?
+  profileImg String?
 
   studentIdCardNumber String?
-  institutionName String?
+  institutionName     String?
 
   isStudentVerified Boolean @default(false)
 

@@ -2,9 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { profileService } from "./profile.service";
 import { sendResponse } from "../../utils/sendResponse";
+import { uploadToCloudinary } from "../../service/uploadCloudinaryHelper";
 
 // get Profile withing login user
-const getProfile = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+const getProfile = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?.id as string;
 
     const profile = await profileService.getProfileFormDB(userId);
@@ -15,13 +17,21 @@ const getProfile = catchAsync(async(req: Request, res: Response, next: NextFunct
       message: "Profile retrieved successfully",
       data: profile,
     });
-});
-
+  },
+);
 
 // update profile within login user
-const updateProfile = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
-    const userId = req.user?.id as string; 
-    const payload = req.body
+const updateProfile = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?.id as string;
+    const payload = { ...req.body };
+    const file = req.file;
+
+    if (file) {
+      const imageUrl = await uploadToCloudinary(file.buffer);
+
+      payload.profileImg = imageUrl;
+    }
 
     const profile = await profileService.updatedProfileFormDB(userId, payload);
 
@@ -31,9 +41,10 @@ const updateProfile = catchAsync(async(req: Request, res: Response, next: NextFu
       message: "Profile retrieved successfully",
       data: profile,
     });
-});
+  },
+);
 
 export const profileController = {
-    getProfile,
-    updateProfile
-}
+  getProfile,
+  updateProfile,
+};

@@ -46,6 +46,10 @@ const updatedProfileFormDB = async (userId: string, payload: IUpdateProfile) => 
         institutionName: payload.institutionName,
       }),
 
+      ...(payload.profileImg !== undefined && {
+        profileImg: payload.profileImg,
+      }),
+
       isStudentVerified: true
     },
 
