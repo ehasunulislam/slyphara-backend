@@ -1,4 +1,4 @@
-import { PaymentStatus, SubscriptionPlan } from "../../../generated/prisma/enums";
+import { PaymentStatus, SubscriptionPlan, UserRole } from "../../../generated/prisma/enums";
 import { prisma } from "../../../lib/prisma";
 import { stripe } from "../../../lib/stripe";
 import config from "../../config";
@@ -14,6 +14,9 @@ const createCheckoutSession = async(userId: string) => {
         where: {
             id: userId,
         },
+        include: {
+            profile: true
+        }
     });
 
     if (!user) {
@@ -30,6 +33,15 @@ const createCheckoutSession = async(userId: string) => {
         throw new AppError(httpStatus.BAD_REQUEST,"You already have an active subscription");
     }
 
+    /* price calculation (if user role is student then price * 15% less) */
+    const originalPrice = 150;
+    const isStudent = user.role === UserRole.Student;
+    const hasStudentInformation = Boolean(user.profile?.studentIdCardNumber) && Boolean(user.profile?.institutionName);
+    const isStudentEligable = isStudent && hasStudentInformation;
+    const discountParcentage = isStudentEligable ? 15 : 0;
+    const discountAmount = originalPrice * (discountParcentage / 100);
+    const finalPrice = originalPrice - discountAmount;
+
     /* create the Checkout Session */
     const session = await stripe.checkout.sessions.create({
         mode: "payment",
@@ -40,10 +52,12 @@ const createCheckoutSession = async(userId: string) => {
                     currency: "usd",
                     product_data: {
                         name: "Premimum AI - 6 Months",
-                        description: "Premium AI access with 100 chats per day for 6 months"
+                        description: isStudentEligable ?
+                                     "Premium AI access with 15% student discount" :
+                                     "Premium AI access with 100 chats per day for 6 months"
                     },
                     // 150$
-                    unit_amount: Math.round(Number(150) * 100)
+                    unit_amount: Math.round(finalPrice * 100)
                 },
                 quantity: 1
             }
@@ -52,7 +66,11 @@ const createCheckoutSession = async(userId: string) => {
         customer_email: user.email,
         metadata: {
             userId: user.id,
-            plan: SubscriptionPlan.HALF_YEARLY
+            plan: SubscriptionPlan.HALF_YEARLY,
+            originalPrice: originalPrice.toString(),
+            discountParcentage: discountParcentage.toString(),
+            finalPrice: finalPrice.toString(),
+            studentDiscount: isStudentEligable.toString()
         },
 
         success_url: `${config.frontend_url}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
@@ -64,7 +82,7 @@ const createCheckoutSession = async(userId: string) => {
     await prisma.subscription.create({
         data: {
             userId: user.id,
-            amount: 150,
+            amount: finalPrice,
             plan: SubscriptionPlan.HALF_YEARLY,
             status: PaymentStatus.PENDING,
             stripeSessionId: session.id,
@@ -75,6 +93,11 @@ const createCheckoutSession = async(userId: string) => {
     return {
         checkoutUrl: session.url,
         sessionId: session.id,
+        originalPrice,
+        discountParcentage,
+        discountAmount,
+        finalPrice,
+        studentDiscount: isStudentEligable
     }
 }
 
@@ -194,7 +217,7 @@ const verifyPayment = async(payload: IVerifiePayment) => {
     return {
         message: "Payment verified successfully",
         subscriptionPlan: SubscriptionPlan.HALF_YEARLY,
-        amount: 150,
+        amount: subscription.amount,
         currency: "usd",
         subscriptionStart: startDate,
         subscriptionEnd: endDate,
