@@ -71,6 +71,6 @@ router.patch("/remove-project-access",
 router.get("/project-developers",
     auth(UserRole.Admin),
     adminController.getProjectDevelopers
-);
+)
 
 export const adminRouter = router;

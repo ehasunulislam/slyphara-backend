@@ -110,6 +110,42 @@ const refreshToken = catchAsync(async(req: Request, res: Response, next: NextFun
 });
 
 
+// google auth functioanlity
+const googleLogin = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+  const payload = req.body;
+  console.log(payload, "payload");
+
+  const result = await authService.googleLoginService(payload);
+
+  const { accessToken, refreshToken } = result;
+
+	res.cookie("accessToken", accessToken, {
+		httpOnly: true,
+		secure: false,
+		sameSite: "none",
+		maxAge: 1000 * 60 * 60 * 24, // 24 hour or 1 day
+	});
+
+	res.cookie("refreshToken", refreshToken, {
+		httpOnly: true,
+		secure: false,
+		sameSite: "none",
+		maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+	});
+
+  sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Logged In With google successFully",
+		data: {
+      accessToken, 
+      refreshToken
+    },
+	});
+});
+
+
+
 // forgot password 
 const forgotPassword = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
   const payload = req.body;
@@ -147,5 +183,6 @@ export const auhtController = {
     loginUser,
     refreshToken,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    googleLogin
 }

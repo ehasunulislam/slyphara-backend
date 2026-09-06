@@ -21,6 +21,10 @@ router.post("/login",
     auhtController.loginUser
 );
 
+// GOOGLE'S CLIENT
+router.post("/google", auhtController.googleLogin);
+
+
 // m-21 again giving a new accesstoken route
 router.post("/refresh-token", auhtController.refreshToken);
 

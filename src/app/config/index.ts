@@ -25,6 +25,8 @@ export default {
 
 	open_router: process.env.OPEN_ROUTER_API_KEY!,
 
+	google_client_id: process.env.GOOGLE_CLIENT_ID!,
+
 	// stripe_product_id: process.env.STRIPE_PRODUCT_ID!,
 	stripe_secret_key: process.env.STRIPE_SECRET_KEY!,
 	stripe_publish_key: process.env.STRIPE_PUBLISH_KEY!,

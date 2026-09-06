@@ -2,12 +2,15 @@ model User {
   id            String     @id @default(uuid())
   name          String
   email         String     @unique
-  password      String
+  password      String?
   role          UserRole
   status        UserStatus @default(ACTIVE)
   emailVerified Boolean    @default(false)
   isPremimum    Boolean    @default(false)
   projectAccess Boolean    @default(false)
+
+  googleId     String?       @unique
+  authProvider AuthProvider @default(CREDENTIAL)
 
   profile      Profile?
   converSation Conversation[]
