@@ -13,7 +13,7 @@ const getAllUser = catchAsync(async(req: Request, res: Response, next: NextFunct
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
-        message: "Bookings retrieved successfully",
+        message: "All Users retrieved successfully",
         data: {
             users
         },
@@ -27,7 +27,7 @@ const getPaymentAnalytics = catchAsync(async(req: Request, res: Response, next: 
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
-        message: "Bookings retrieved successfully",
+        message: "Payment analytics retrieved successfully",
         data: analytics,
     });
 });
@@ -46,7 +46,7 @@ const getPaymentHistory = catchAsync(async(req: Request, res: Response, next: Ne
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
-        message: "Bookings retrieved successfully",
+        message: "Payment history retrieved successfully",
         data: paymentHistory,
     });
 });
