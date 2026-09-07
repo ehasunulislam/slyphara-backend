@@ -12,6 +12,14 @@ The core idea: the better and more engaging a user's conversation is with the AI
 
 ---
 
+---
+
+## 📌 Links
+
+BACKEND_REAL_API_LINK: https://slyphara-backend.vercel.app
+
+---
+
 ## 👥 User Roles
 
 Sylphara has **three roles**, each with a distinct purpose and access flow:
