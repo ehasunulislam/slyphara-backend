@@ -36,7 +36,7 @@ const verifyPayment  = catchAsync(async(req: Request, res: Response, next: NextF
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: "Stripe checkout session created successfully",
+    message: "Payment verified successfully",
     data: result,
   });
 });

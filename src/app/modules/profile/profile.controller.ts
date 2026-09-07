@@ -38,7 +38,7 @@ const updateProfile = catchAsync(
     sendResponse(res, {
       statusCode: 200,
       success: true,
-      message: "Profile retrieved successfully",
+      message: "Profile updated successfully",
       data: profile,
     });
   },
